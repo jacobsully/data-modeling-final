@@ -1,0 +1,85 @@
+<!doctype html>
+<head>
+
+    <title>Data Modeling Final</title>
+    
+</head>
+
+<body>
+    <form method="post">
+        <input type="number" name="Year_field" placeholder="Enter a year between 1985 and 2016" style="width:300px">
+        <input type="submit" value="Submit Year">
+    </form>
+    <div id="my_dataviz">
+
+    </div>
+
+    <div class="best-value" id="bestValue">
+        <p></p>
+    </div>
+    <div class="worst-value" id="worstValue">
+        <p></p>
+    </div>
+
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script>
+        d3.json("/get-best-value-batter", function(error, root){
+            d3.select("#bestValue").append("p").text("The best value hitter this year was "+root["playerId"]+" who had a "+root["OBP"]+" OBP, and who made $"+root["Salary"]);
+        });
+
+        d3.json("/get-worst-value-batter", function(error, root){
+            d3.select("#worstValue").append("p").text("The worst value hitter this year was "+root["playerId"]+" who had a "+root["OBP"]+" OBP, and who made $"+root["Salary"]);
+        });
+        
+        // set the dimensions and margins of the graph
+        var margin = {top: 10, right: 30, bottom: 30, left: 60},
+            width = 460 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        // append the svg object to the body of the page
+        var svg = d3.select("#my_dataviz")
+        .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+            .attr("transform",
+                "translate(" + margin.left + "," + margin.top + ")");
+
+        //Read the data
+        d3.json("/get-batter-data", function(error, data) {
+
+        // Add X axis
+        var x = d3.scaleLinear()
+            .domain([0, 0.65])
+            .range([ 0, width ]);
+        svg.append("g")
+            .attr("transform", "translate(0," + height + ")")
+            .call(d3.axisBottom(x));
+
+        // Add Y axis
+        var y = d3.scaleLinear()
+            .domain([0, 30000000])
+            .range([ height, 0]);
+        svg.append("g")
+            .call(d3.axisLeft(y));
+
+        simplifiedData = [];  
+        var count = Object.keys(data).length;
+        for(i=0; i<count; i++) {
+            simplifiedData[i] = [data[i].OBP,data[i].Salary];
+        }
+        
+        // Add dots
+        svg.append('g')
+            .selectAll("dot")
+            .data(simplifiedData)
+            .enter()
+            .append("circle")
+            .attr("cx", function (data) { return x(data[0]); } )
+            .attr("cy", function (data) { return y(data[1]); } )
+            .attr("r", 1.5)
+            .style("fill", "#69b3a2")
+        })
+    </script>
+</body>
+</html>

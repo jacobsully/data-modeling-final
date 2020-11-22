@@ -1,4 +1,5 @@
 Flask==1.1.2
+gunicorn==20.0.4
 Jinja2==2.11.2
 json5==0.9.5
 mpmath==1.1.0

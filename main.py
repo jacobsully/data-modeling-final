@@ -2,7 +2,6 @@ from flask import Flask, jsonify, request
 import pandas
 import json
 import numpy as np
-import matplotlib.pyplot as plt  
 import math
 from db import get_salaries, get_batters, get_pitchers
 from flask.templating import render_template
